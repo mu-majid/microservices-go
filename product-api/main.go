@@ -1,9 +1,11 @@
 package main
 
 import (
+	"context"
 	"log"
 	"net/http"
 	"os"
+	"os/signal"
 	"time"
 )
 
@@ -25,6 +27,28 @@ func main() {
 		ReadTimeout:  1 * time.Second,
 		WriteTimeout: 1 * time.Second,
 	}
-	// every IP is bound to 9090, nil means use the defaultServeMUX, but now pass our sm
-	s.ListenAndServe()
+
+	// To make the listenAndServe Not blocking, we wrapped it inside a go routine
+	go func() {
+		err := s.ListenAndServe()
+
+		if err != nil {
+			l.Fatal((err))
+			l.Printf("Error starting server: %s\n", err)
+			os.Exit(1)
+		}
+	}()
+
+	// trap sigterm or interupt and gracefully shutdown the server
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, os.Interrupt)
+	signal.Notify(c, os.Kill)
+
+	// Block until a signal is received.
+	sig := <-c
+	log.Println("Got signal:", sig)
+
+	// gracefully shutdown the server, waiting max 30 seconds for current operations to complete
+	ctx, _ := context.WithTimeout(context.Background(), 30*time.Second)
+	s.Shutdown(ctx)
 }
