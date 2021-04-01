@@ -4,8 +4,7 @@ import (
 	"log"
 	"net/http"
 	"os"
-
-	"github.com/mu-majid/microservices-go/product-api/handlers"
+	"time"
 )
 
 func main() {
@@ -18,6 +17,14 @@ func main() {
 	sm.Handle("/", hh)
 	sm.Handle("/goodbye", gh)
 
+	// create http server to be able to tune some params
+	s := &http.Server{
+		Addr:         ":9090",
+		Handler:      sm,
+		IdleTimeout:  120 * time.Second,
+		ReadTimeout:  1 * time.Second,
+		WriteTimeout: 1 * time.Second,
+	}
 	// every IP is bound to 9090, nil means use the defaultServeMUX, but now pass our sm
-	http.ListenAndServe(":9090", sm)
+	s.ListenAndServe()
 }
