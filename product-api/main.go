@@ -11,9 +11,13 @@ import (
 	"github.com/mu-majid/microservices-go/product-api/handlers"
 )
 
+// var bindAddress = env.String("BIND_ADDRESS", false, ":9090", "Bind address for the server")
 func main() {
 
-	l := log.New(os.Stdout, "product-api", log.LstdFlags)
+	// env.Parse()
+
+	l := log.New(os.Stdout, "products-api ", log.LstdFlags)
+
 	// create the handlers
 	ph := handlers.NewProducts(l)
 
@@ -21,21 +25,22 @@ func main() {
 	sm := http.NewServeMux()
 	sm.Handle("/", ph)
 
-	// create http server to be able to tune some params
-	s := &http.Server{
-		Addr:         ":9090",
-		Handler:      sm,
-		IdleTimeout:  120 * time.Second,
-		ReadTimeout:  1 * time.Second,
-		WriteTimeout: 1 * time.Second,
+	// create a new server
+	s := http.Server{
+		Addr:         ":9090",           // configure the bind address
+		Handler:      sm,                // set the default handler
+		ErrorLog:     l,                 // set the logger for the server
+		ReadTimeout:  5 * time.Second,   // max time to read request from the client
+		WriteTimeout: 10 * time.Second,  // max time to write response to the client
+		IdleTimeout:  120 * time.Second, // max time for connections using TCP Keep-Alive
 	}
 
-	// To make the listenAndServe Not blocking, we wrapped it inside a go routine
+	// start the server - Async
 	go func() {
-		err := s.ListenAndServe()
+		l.Println("Starting server on port 9090")
 
+		err := s.ListenAndServe()
 		if err != nil {
-			l.Fatal((err))
 			l.Printf("Error starting server: %s\n", err)
 			os.Exit(1)
 		}
