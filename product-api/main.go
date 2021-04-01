@@ -7,6 +7,8 @@ import (
 	"os"
 	"os/signal"
 	"time"
+
+	"github.com/mu-majid/microservices-go/product-api/handlers"
 )
 
 func main() {
