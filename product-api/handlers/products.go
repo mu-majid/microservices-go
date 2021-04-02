@@ -26,6 +26,11 @@ func (p *Products) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if r.Method == http.MethodPost {
+		p.addProduct(rw, r)
+		return
+	}
+
 	// Catch All
 	// if no method is satisfied return an error
 	rw.WriteHeader(http.StatusNotImplemented)
@@ -41,4 +46,17 @@ func (p *Products) getProducts(rw http.ResponseWriter, h *http.Request) {
 		http.Error(rw, "Unable to encode Data to JSON", http.StatusInternalServerError)
 		return
 	}
+}
+
+func (p *Products) addProduct(rw http.ResponseWriter, r *http.Request) {
+	p.l.Println("Handle POST Product")
+
+	prod := &data.Product{}
+
+	err := prod.FromJSON(r.Body)
+	if err != nil {
+		http.Error(rw, "Unable to unmarshal json", http.StatusBadRequest)
+	}
+
+	data.AddProduct(prod)
 }
