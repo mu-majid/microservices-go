@@ -34,6 +34,7 @@ class CoffeeList extends React.Component {
 
   constructor(props) {
     super(props);
+    // This is not good, this should be in componentDidMount lifeCycle method.
     this.readData();
     this.state = { products: [] };
 
