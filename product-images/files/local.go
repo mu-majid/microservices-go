@@ -11,7 +11,7 @@ import (
 // Local is an implementation of the Storage interface which works with the
 // local disk on the current machine
 type Local struct {
-	maxFileSize int // maximum numbber of bytes for files
+	maxFileSize int // maximum number of bytes for files
 	basePath    string
 }
 
