@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 
 	"github.com/gorilla/mux"
-	"github.com/hashicorp/go-hclog"
+	hclog "github.com/hashicorp/go-hclog"
 	"github.com/mu-majid/microservices-go/product-images/files"
 )
 
