@@ -25,8 +25,18 @@ func main() {
 	l := log.New(os.Stdout, "products-api ", log.LstdFlags)
 	v := data.NewValidation()
 
+	conn, err := grpc.Dial("localhost:9092", grpc.WithInsecure())
+	if err != nil {
+		panic(err)
+	}
+
+	defer conn.Close()
+
+	// create client
+	cc := protos.NewCurrencyClient(conn)
+
 	// create the handlers
-	ph := handlers.NewProducts(l, v)
+	ph := handlers.NewProducts(l, v, cc)
 
 	// create a new serve mux and register the handlers
 	sm := mux.NewRouter()
@@ -67,7 +77,7 @@ func main() {
 		IdleTimeout:  120 * time.Second, // max time for connections using TCP Keep-Alive
 	}
 
-	// start the server - Async
+	// start the server
 	go func() {
 		l.Println("Starting server on port 9090")
 
