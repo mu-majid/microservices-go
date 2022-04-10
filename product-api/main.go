@@ -11,6 +11,7 @@ import (
 	"github.com/go-openapi/runtime/middleware"
 	gohandlers "github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
+	protos "github.com/mu-majid/microservices-go/currency/protos/currency"
 	"github.com/mu-majid/microservices-go/product-api/data"
 	"github.com/mu-majid/microservices-go/product-api/handlers"
 	"github.com/nicholasjackson/env"
